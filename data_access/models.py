@@ -2,8 +2,8 @@
 # Описуємо не всі колонки CSV, а тільки ті, що нам потрібні.
 import enum
 
-from sqlalchemy import Column, DateTime, Double, Enum, Integer, String, Time
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import Column, DateTime, Double, Enum, ForeignKey, Integer, String, Time
+from sqlalchemy.orm import DeclarativeBase, relationship
 
 
 class Base(DeclarativeBase):
@@ -40,10 +40,20 @@ class Weather(Base):
     condition_text = Column(String(100))
     sunrise = Column(Time)                                   # час
 
+    # дані про вітер лежать в окремій таблиці (зв'язок один-до-одного)
+    wind = relationship("Wind", back_populates="weather", uselist=False)
+
+
+class Wind(Base):
     # категорія "вітер" (варіант 17 -> 17 mod 4 = 1)
+    __tablename__ = "wind"
+
+    weather_id = Column(Integer, ForeignKey("weather.id"), primary_key=True)
     wind_mph = Column(Double)
     wind_kph = Column(Double)                                # дробне число
     wind_degree = Column(Integer)                            # ціле число
     wind_direction = Column(Enum(WindDirection, name="wind_direction_enum"))  # enumeration
     gust_mph = Column(Double)
     gust_kph = Column(Double)
+
+    weather = relationship("Weather", back_populates="wind")

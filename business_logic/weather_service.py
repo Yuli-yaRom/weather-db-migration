@@ -2,12 +2,11 @@
 import pandas as pd
 
 from data_access import repository
-from data_access.models import Weather, WindDirection
+from data_access.models import Weather, Wind, WindDirection
 
-CSV_COLUMNS = [
-    "country", "location_name", "last_updated", "temperature_celsius", "condition_text", "sunrise",
-    "wind_mph", "wind_kph", "wind_degree", "wind_direction", "gust_mph", "gust_kph",
-]
+WEATHER_COLUMNS = ["country", "location_name", "last_updated", "temperature_celsius", "condition_text", "sunrise"]
+WIND_COLUMNS = ["wind_mph", "wind_kph", "wind_degree", "wind_direction", "gust_mph", "gust_kph"]
+CSV_COLUMNS = WEATHER_COLUMNS + WIND_COLUMNS
 
 
 def read_csv(path):
@@ -29,6 +28,8 @@ def import_csv(session, path):
     objects = []
     for row in read_csv(path):
         row["wind_direction"] = parse_direction(row["wind_direction"])
-        objects.append(Weather(**row))
+        weather = Weather(**{col: row[col] for col in WEATHER_COLUMNS})
+        weather.wind = Wind(**{col: row[col] for col in WIND_COLUMNS})
+        objects.append(weather)
     repository.save_all(session, objects)
     return len(objects)
