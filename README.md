@@ -3,7 +3,7 @@
 Виконала: Романюк Юлія, група КМ-41, номер у списку 17.
 Варіант: 17 mod 4 = 1 категорія **«вітер»**.
 
-Технології: Python, SQLAlchemy (ORM), Alembic (міграції), PostgreSQL, MySQL, pandas.
+Технології: Python, SQLAlchemy (ORM), Alembic (міграції), PostgreSQL, MySQL, Pandas.
 Датасет: [Global Weather Repository](https://www.kaggle.com/datasets/nelgiriyewithana/global-weather-repository).
 
 ## Структура проєкту (Layered Architecture)
@@ -20,34 +20,6 @@ datasets/                       CSV-файли
 ```
 Кожен шар звертається тільки до шару під ним: меню → бізнес-логіка → шар даних → БД.
 
-## Як запустити
-
-```bash
-pip install -r requirements.txt
-docker compose up -d        # запускає Postgres і MySQL (або свої, адреси в data_access/database.py)
-```
-Покласти `GlobalWeatherRepository.csv` з Kaggle у папку `datasets/`.
-(У `datasets/sample_weather.csv` лежить маленький файл з тими самими колонками для перевірки.)
-
-```bash
-alembic upgrade head        # створити / оновити структуру БД у Postgres
-python main.py              # меню для Postgres
-```
-```
-=== Погодна база (postgres) ===
-1 - Завантажити дані з CSV
-2 - Показати погоду за країною та датою
-3 - Скопіювати всі дані з Postgres у MySQL
-0 - Вихід
-```
-Інші корисні команди Alembic:
-```bash
-alembic current             # на якій міграції зараз база
-alembic history             # список міграцій
-alembic downgrade -1        # відкотити останню міграцію
-alembic -x db=mysql upgrade head   # те саме для MySQL
-python main.py mysql        # меню для MySQL
-```
 
 ## Гілки (етапи)
 
@@ -85,15 +57,15 @@ python main.py mysql        # меню для MySQL
 Через такий порядок дані не втрачаються. `downgrade` робить усе навпаки: повертає колонки в `weather`,
 копіює дані з `wind` і видаляє `wind`.
 
-Особливість: у Postgres enum — це окремий тип `wind_direction_enum`, він уже створений у міграції 0001.
+Особливість: у Postgres enum це окремий тип `wind_direction_enum`, він уже створений у міграції 0001.
 Тому в 0002 стоїть `create_type=False`, щоб Alembic не пробував створити його вдруге.
 
 ## Етап 3. Колонка «Чи варто виходити на вулицю»
 
-Формула (за шкалою Бофорта, 10 м/с — це вже «сильний вітер»):
+Формула (за шкалою Бофорта, 10 м/с це вже сильний вітер):
 ```
 не виходити, якщо вітер > 36 км/год (10 м/с) або пориви > 54 км/год (15 м/с)
-інакше — можна виходити
+інакше можна виходити
 ```
 
 Міграція `0003` робить три кроки:
@@ -105,7 +77,7 @@ python main.py mysql        # меню для MySQL
 
 ## Етап 4. Пошук
 
-Пункт меню 2: вводимо країну, дату і (за бажанням) місто — програма показує всі збережені дані про погоду.
+Пункт меню 2: вводимо країну, дату і місто — програма показує всі збережені дані про погоду.
 Регістр не важливий (`ukraine` = `Ukraine`).
 ```
 Країна: Japan
