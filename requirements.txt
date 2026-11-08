@@ -1,0 +1,6 @@
+SQLAlchemy
+alembic
+pandas
+psycopg2-binary
+PyMySQL
+cryptography
