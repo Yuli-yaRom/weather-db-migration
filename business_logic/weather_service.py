@@ -2,6 +2,7 @@
 import pandas as pd
 
 from data_access import repository
+from data_access.database import get_engine
 from data_access.models import Weather, Wind, WindDirection
 
 WEATHER_COLUMNS = ["country", "location_name", "last_updated", "temperature_celsius", "condition_text", "sunrise"]
@@ -50,3 +51,23 @@ def count_records(session):
 
 def find_weather(session, country, day, location=None):
     return repository.find_weather(session, country, day, location)
+
+
+def copy_database(source_db="postgres", target_db="mysql"):
+    """Копіює всі дані з однієї бази в іншу (id зберігаються).
+    Перед цим у цільовій базі треба виконати ті самі міграції:  alembic -x db=mysql upgrade head"""
+    source = get_engine(source_db)
+    target = get_engine(target_db)
+    tables = [Weather.__table__, Wind.__table__]   # спочатку weather, бо wind посилається на неї
+
+    for table in tables:
+        if repository.count_rows(target, table) > 0:
+            return f"Помилка: у {target_db} таблиця {table.name} вже не порожня"
+
+    report = []
+    for table in tables:
+        rows = repository.read_all_rows(source, table)
+        repository.insert_rows(target, table, rows)
+        report.append(f"{table.name}: {source_db} = {repository.count_rows(source, table)}, "
+                      f"{target_db} = {repository.count_rows(target, table)}")
+    return "\n".join(report)

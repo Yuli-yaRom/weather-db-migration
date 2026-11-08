@@ -43,6 +43,7 @@ def run_menu(db_name):
         print(f"\n=== Погодна база ({db_name}) ===")
         print("1 - Завантажити дані з CSV")
         print("2 - Показати погоду за країною та датою")
+        print("3 - Скопіювати всі дані з Postgres у MySQL")
         print("0 - Вихід")
         choice = input("Ваш вибір: ").strip()
 
@@ -57,6 +58,8 @@ def run_menu(db_name):
             print(f"Додано записів: {count}")
         elif choice == "2":
             show_weather(session)
+        elif choice == "3":
+            print(weather_service.copy_database("postgres", "mysql"))
         elif choice == "0":
             break
         else:
