@@ -1,7 +1,7 @@
 # Лабораторна робота №4 — Міграція бази даних
 
 Виконала: Романюк Юлія, група КМ-41, номер у списку 17.
-Варіант: 17 mod 4 = 1 → категорія **«вітер»**.
+Варіант: 17 mod 4 = 1 категорія **«вітер»**.
 
 Технології: Python, SQLAlchemy (ORM), Alembic (міграції), PostgreSQL, MySQL, pandas.
 Датасет: [Global Weather Repository](https://www.kaggle.com/datasets/nelgiriyewithana/global-weather-repository).
