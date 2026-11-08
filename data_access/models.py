@@ -2,7 +2,7 @@
 # Описуємо не всі колонки CSV, а тільки ті, що нам потрібні.
 import enum
 
-from sqlalchemy import Column, DateTime, Double, Enum, ForeignKey, Integer, String, Time
+from sqlalchemy import Boolean, Column, DateTime, Double, Enum, ForeignKey, Integer, String, Time
 from sqlalchemy.orm import DeclarativeBase, relationship
 
 
@@ -55,5 +55,6 @@ class Wind(Base):
     wind_direction = Column(Enum(WindDirection, name="wind_direction_enum"))  # enumeration
     gust_mph = Column(Double)
     gust_kph = Column(Double)
+    should_go_outside = Column(Boolean, nullable=False)      # "Чи варто виходити на вулицю"
 
     weather = relationship("Weather", back_populates="wind")

@@ -12,6 +12,11 @@ def run_menu(db_name):
         choice = input("Ваш вибір: ").strip()
 
         if choice == "1":
+            existing = weather_service.count_records(session)
+            if existing > 0:
+                answer = input(f"У базі вже є {existing} записів. Завантажити ще раз? (так/ні): ")
+                if answer.strip().lower() != "так":
+                    continue
             path = input("Шлях до CSV [datasets/GlobalWeatherRepository.csv]: ").strip()
             count = weather_service.import_csv(session, path or "datasets/GlobalWeatherRepository.csv")
             print(f"Додано записів: {count}")

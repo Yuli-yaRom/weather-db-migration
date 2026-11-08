@@ -18,6 +18,14 @@ def read_csv(path):
     return df.to_dict("records")
 
 
+def should_go_outside(wind_kph, gust_kph):
+    """Чи варто виходити на вулицю.
+    Ні - якщо вітер сильніший за 36 км/год (10 м/с) або пориви сильніші за 54 км/год (15 м/с)."""
+    wind_kph = wind_kph or 0
+    gust_kph = gust_kph or 0
+    return wind_kph <= 36 and gust_kph <= 54
+
+
 def parse_direction(text):
     if text in WindDirection.__members__:
         return WindDirection(text)
@@ -30,6 +38,11 @@ def import_csv(session, path):
         row["wind_direction"] = parse_direction(row["wind_direction"])
         weather = Weather(**{col: row[col] for col in WEATHER_COLUMNS})
         weather.wind = Wind(**{col: row[col] for col in WIND_COLUMNS})
+        weather.wind.should_go_outside = should_go_outside(row["wind_kph"], row["gust_kph"])
         objects.append(weather)
     repository.save_all(session, objects)
     return len(objects)
+
+
+def count_records(session):
+    return repository.count_weather(session)
