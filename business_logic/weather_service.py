@@ -46,3 +46,7 @@ def import_csv(session, path):
 
 def count_records(session):
     return repository.count_weather(session)
+
+
+def find_weather(session, country, day, location=None):
+    return repository.find_weather(session, country, day, location)
